@@ -93,7 +93,7 @@ Each folder is a standard skill: a `SKILL.md` plus supporting files.
 - **Rebuild the downloads** after editing a skill: `./package.sh` writes fresh zips to `downloads/`.
 - **Resume generator:** `resume-tailor/scripts/generate_resume.js` needs Node.js and the `docx` package. The JSON schema and style options (font, accent color, Letter or A4, section order) are documented at the top of that file.
 - **Your own baseline:** replace `resume-tailor/references/master_resume.json` with your resume to skip attaching it each time. It holds your contact details, so think before pushing a fork public.
-- **Dashboard:** `pipeline-tracker/assets/dashboard-template.html` is one self-contained file with light and dark themes. It needs no network and no connectors to open.
+- **Dashboard:** `pipeline-tracker/assets/dashboard-template.html` is one self-contained file. It needs no network and no connectors to open.
 
 </details>
 

@@ -6,36 +6,16 @@
 <title>Job Search Dashboard</title>
 <style>
   /* One column, summary first: counts, then what is waiting on you, then dates, then the full board. */
+  /* One look on purpose: cream in every viewer, light or dark mode. */
   :root {
-    --bg:#f5eedf; --card:#fffdf7; --line:#e8dcc6; --line-soft:#f1e8d6;
-    --ink:#3d2a24; --ink-2:#6b574c; --muted:#8f7c6c; --faint:#b3a391;
-    --accent:#6b3f2a; --accent-bg:#f0e2c9; --accent-card:#fbf3e0; --accent-line:#ead9b8;
-    --hero-a:#efe4cd; --hero-b:#e9dabd;
-    --green:#4f7a63; --green-bg:#e4eddc;
-    --amber:#a36f14; --amber-bg:#f8e9c4;
-    --red:#b5452f; --red-bg:#f8e0d6;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      color-scheme: dark;
-      --bg:#1f1a14; --card:#2a241c; --line:#433a2d; --line-soft:#352d23;
-      --ink:#f3ead9; --ink-2:#d3c5ae; --muted:#a99a84; --faint:#7f725f;
-      --accent:#e6c79a; --accent-bg:#43371f; --accent-card:#30281b; --accent-line:#4d4028;
-      --hero-a:#33291d; --hero-b:#3d3122;
-      --green:#9dc4a8; --green-bg:#28382c;
-      --amber:#e8bd6b; --amber-bg:#43331a;
-      --red:#ff9f8c; --red-bg:#4a281f;
-    }
-  }
-  :root[data-theme="dark"] {
-    color-scheme: dark;
-    --bg:#1f1a14; --card:#2a241c; --line:#433a2d; --line-soft:#352d23;
-    --ink:#f3ead9; --ink-2:#d3c5ae; --muted:#a99a84; --faint:#7f725f;
-    --accent:#e6c79a; --accent-bg:#43371f; --accent-card:#30281b; --accent-line:#4d4028;
-    --hero-a:#33291d; --hero-b:#3d3122;
-    --green:#9dc4a8; --green-bg:#28382c;
-    --amber:#e8bd6b; --amber-bg:#43331a;
-    --red:#ff9f8c; --red-bg:#4a281f;
+    color-scheme: light;
+    --bg:#fdf8ec; --card:#ffffff; --line:#f0e7d4; --line-soft:#f7f1e3;
+    --ink:#3a2c26; --ink-2:#6b5b51; --muted:#93847a; --faint:#b8aca0;
+    --accent:#3a2c26; --accent-bg:#f6ecd6; --accent-card:#fff7e3; --accent-line:#f3e6c6;
+    --hero-a:#fbf1da; --hero-b:#f8ebcf;
+    --green:#3f7a5c; --green-bg:#e3f1e6;
+    --amber:#a36f14; --amber-bg:#fbedc8;
+    --red:#c2412d; --red-bg:#fbe2da;
   }
   * { box-sizing: border-box; }
   body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
