@@ -1,73 +1,95 @@
 # Job Search Skills for Claude
 
-Two skills that make Claude useful for the repetitive parts of a job search.
+Three add-ons that turn Claude into a job search assistant. They're free, and you don't need to know how to code to use them.
 
-| Skill | What it does |
+| Skill | What it does for you |
 | --- | --- |
-| `resume-tailor` | Takes your resume and a job posting, rewrites the summary, skills order, and bullet wording to match the posting, builds a clean, ATS-friendly `.docx`, and tells you how well you fit the role. Works for students and career changers too. |
-| `interview-prep` | Builds a prep brief for a specific interview: a one-screen cheat sheet, a full brief on the company and interviewer, likely questions with draft answers from your real experience, and a mock interview with feedback if you want to practice. |
+| **Resume Tailor** | You give it your resume and a job posting. It rewrites your resume to fit that job, hands you a Word file, and tells you how good a match you are. |
+| **Interview Prep** | You tell it who you're interviewing with. It gives you a one-page cheat sheet, likely questions with answers drawn from your own experience, and a practice interview if you want one. |
+| **Pipeline Tracker** | It builds one page showing every company you're talking to, where each one stands, and who is waiting on a reply from you. |
 
-Both follow one rule: **reframe what you've actually done, never invent it.**
-Claude will tell you where a posting asks for something your resume doesn't
-show instead of papering over it.
+All three follow one rule: **Claude describes what you've really done in the best light. It never makes things up.** If a job asks for something you don't have, it tells you.
 
-## Install
+## Install (about 5 minutes)
 
-A skill is a folder with a `SKILL.md` in it.
+You need a Claude account. That's it.
 
-- **Claude Code:** copy `resume-tailor/` and `interview-prep/` into
-  `~/.claude/skills/` (or `.claude/skills/` inside a project).
-- **Claude apps:** run `./package.sh` to produce `dist/resume-tailor.zip` and
-  `dist/interview-prep.zip`, then add each zip as a custom skill in Claude's
-  settings.
+### Step 1: Download the three files
 
-## Use
+Click each link. A file ending in `.zip` will save to your Downloads folder.
 
-**Resume.** Attach or paste your resume and a job posting, then ask:
+- [Download Resume Tailor](https://github.com/pepperworks/Job-Search-Skills/raw/main/downloads/resume-tailor.zip)
+- [Download Interview Prep](https://github.com/pepperworks/Job-Search-Skills/raw/main/downloads/interview-prep.zip)
+- [Download Pipeline Tracker](https://github.com/pepperworks/Job-Search-Skills/raw/main/downloads/pipeline-tracker.zip)
 
-> Tailor my resume for this role.
+Don't open the files. Claude needs them exactly as they downloaded.
 
-You get a `.docx` named for the company and role, plus a fit check: what
-the posting wants that you clearly have, what's a stretch, and what's
-missing.
+> **On a Mac using Safari?** Safari sometimes opens the file for you and turns it into a folder. If you see a folder instead of a `.zip` file, right-click the folder and choose **Compress**. Use the `.zip` that creates.
 
-To skip attaching your resume each time, replace
-`resume-tailor/references/master_resume.json` with your own content before
-installing. The file ships with a fictional sample that shows the format.
+### Step 2: Let Claude create files
 
-**Interview.**
+1. Open Claude and go to **Settings**.
+2. Choose **Capabilities**.
+3. Turn on **Code execution and file creation**.
 
-> Prep me for my interview with Acme tomorrow.
+This is what lets Claude hand you a finished Word document.
 
-With calendar, email, and file storage connected, Claude finds the invite,
-the recruiter's emails, and your resume on its own. Without them, it asks
-you for the posting, your resume, and whatever the recruiter sent. To
-rehearse out loud, ask:
+### Step 3: Add each skill to Claude
 
-> Run a mock interview for this role.
+1. In Claude, open **Customize**, then **Skills**.
+2. Click the **+** button, then **Create skill**.
+3. Choose **Upload a skill**.
+4. Pick one of the files you downloaded.
+5. Do this two more times for the other two files.
 
-## Make it yours
+Each skill shows up in your list with a switch next to it. Make sure the switch is on.
 
-- **Look and feel:** add a `style` block to your resume JSON to change font,
-  accent color, or page size (`letter` or `a4`). Options are listed at the
-  top of `resume-tailor/scripts/generate_resume.js`.
-- **Standing corrections:** if a fact about you keeps getting repeated wrong,
-  add it to the bottom of `resume-tailor/references/style_rules.md`.
-- **Your field:** the defaults are written to work across roles. If your
-  field has its own conventions (academic CVs, portfolios, federal resumes),
-  edit `style_rules.md` to say so.
+Menus in Claude change from time to time. If yours looks different, Anthropic keeps the current steps here: [Use skills in Claude](https://support.claude.com/en/articles/12512180-use-skills-in-claude).
 
-## Requirements
+## How to use them
 
-`resume-tailor` needs Node.js and the `docx` npm package (`npm install docx`)
-wherever Claude runs code. `interview-prep` needs nothing, and gets better
-with calendar, email, and web search available.
+Start a new chat and type what you want in plain words. Claude picks the right skill on its own.
 
-## Privacy
+**To tailor your resume:** attach your resume, paste in the job posting, and say:
 
-Your resume stays wherever you put it. If you fork this repo and add your
-own `master_resume.json`, remember it holds your phone number and email
-before you push it anywhere public.
+> Tailor my resume for this job.
+
+**To get ready for an interview:**
+
+> Help me prep for my interview with Acme on Thursday. Here's the job posting and my resume.
+
+Then, when you want to rehearse:
+
+> Run a practice interview with me.
+
+**To see where everything stands:**
+
+> Build my job search dashboard. Here are the companies I've applied to and what's happened with each.
+
+## Make it do more
+
+These work with nothing but a chat window. They get better if you connect Claude to your email and calendar, because then Claude can find the recruiter's emails, your interview times, and the threads you forgot to answer, without you pasting anything in.
+
+## Good to know
+
+- **Your information stays yours.** These skills are instructions for Claude. They don't send your resume anywhere else.
+- **Check the work.** Read your tailored resume before you send it. Claude is told not to invent anything, and you're still the one who knows what's true.
+- **Something not working?** Check that all three switches are on, and that Step 2 is done.
+
+---
+
+<details>
+<summary>For developers</summary>
+
+Each folder is a standard skill: a `SKILL.md` plus supporting files.
+
+- **Claude Code:** copy the skill folders into `~/.claude/skills/` (or `.claude/skills/` in a project).
+- **Rebuild the downloads** after editing a skill: `./package.sh` writes fresh zips to `downloads/`.
+- **Resume generator:** `resume-tailor/scripts/generate_resume.js` needs Node.js and the `docx` package. The JSON schema and style options (font, accent color, Letter or A4, section order) are documented at the top of that file.
+- **Your own baseline:** replace `resume-tailor/references/master_resume.json` with your resume to skip attaching it each time. It holds your contact details, so think before pushing a fork public.
+- **Dashboard calendar:** `pipeline-tracker/assets/dashboard-template.html` hides its calendar card unless `CALENDAR_TOOL` is set.
+
+</details>
 
 ## License
 
