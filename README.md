@@ -10,6 +10,12 @@ Three add-ons that turn Claude into a job search assistant. They're free, and yo
 
 All three follow one rule: **Claude describes what you've really done in the best light. It never makes things up.** If a job asks for something you don't have, it tells you.
 
+## See it first
+
+Here's what the Pipeline Tracker builds, shown with made-up companies. [Open the live demo](https://claude.ai/artifact/AiXuy27dwAEi1dd3HMzRrs) to click around.
+
+[![A sample job search dashboard: four counts across the top, a list of things waiting on you, upcoming interviews, and every company grouped by stage](docs/pipeline-demo.png)](https://claude.ai/artifact/AiXuy27dwAEi1dd3HMzRrs)
+
 ## Install (about 5 minutes)
 
 You need a Claude account. That's it.
@@ -87,7 +93,7 @@ Each folder is a standard skill: a `SKILL.md` plus supporting files.
 - **Rebuild the downloads** after editing a skill: `./package.sh` writes fresh zips to `downloads/`.
 - **Resume generator:** `resume-tailor/scripts/generate_resume.js` needs Node.js and the `docx` package. The JSON schema and style options (font, accent color, Letter or A4, section order) are documented at the top of that file.
 - **Your own baseline:** replace `resume-tailor/references/master_resume.json` with your resume to skip attaching it each time. It holds your contact details, so think before pushing a fork public.
-- **Dashboard calendar:** `pipeline-tracker/assets/dashboard-template.html` hides its calendar card unless `CALENDAR_TOOL` is set.
+- **Dashboard:** `pipeline-tracker/assets/dashboard-template.html` is one self-contained file with light and dark themes. It needs no network and no connectors to open.
 
 </details>
 

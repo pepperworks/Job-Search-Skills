@@ -67,19 +67,21 @@ snippets truncate, and a decision usually lands in the last message.
 
 ## Step 4: Build the page
 
-Copy `assets/dashboard-template.html`, fill in the config block at the top
-and replace the `DATA` object. The template is self-contained, needs no
-network, and hides the calendar card when no calendar tool is wired up.
+Copy `assets/dashboard-template.html`, set the config values at the top and
+replace the `DATA` object. The template is one self-contained file that
+needs no network and no connectors to open, so it works the same for
+everyone.
 
-For the calendar, set `CALENDAR_TOOL` to the fully qualified name of a
-list-events tool that exists in the user's environment. **Call that tool once
-yourself first** and shape `calendarArgs()` and `readEvents()` around the
-response you actually saw, rather than the one you expect. Connector
-wrappers rename parameters and reshape output. If no calendar tool exists,
-leave it null and the card disappears cleanly.
+Put every dated commitment from Step 2 into `DATA.upcoming`: interviews,
+take-home due dates, deadlines. Include the time, who it is with and the
+format. The page hides items once their date has passed, and hides the whole
+card when nothing is coming up.
 
-Deliver it however the user's environment persists things: a saved artifact
-they can reopen, or an HTML file. Set `SYNCED` to today's date.
+Set `SYNCED` to today's date. The page warns the user when that date is more
+than a week old.
+
+Deliver it however the user's environment keeps things: a saved page they
+can reopen, or an HTML file.
 
 ## Step 5: Say what changed
 
@@ -100,8 +102,8 @@ Re-run steps 1 through 4 over the window since the last sync. Then:
   anything is still outstanding.
 - Update `SYNCED`.
 
-The calendar section refreshes itself on open. The pipeline does not, so the
-sync date on the page is doing real work. Never leave it stale.
+Nothing on the page updates by itself, so the sync date is doing real work.
+Never leave it stale, and rebuild `upcoming` from the calendar every time.
 
 ## Standing rules
 

@@ -2,63 +2,98 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Job Search Dashboard</title>
 <style>
-  :root { color-scheme: light; }
+  /* One column, summary first: counts, then what is waiting on you, then dates, then the full board. */
+  :root {
+    --bg:#f7f7f5; --card:#ffffff; --line:#e8e8e4; --line-soft:#f1f1ec;
+    --ink:#1f1f1d; --ink-2:#55554f; --muted:#8a8a83; --faint:#a8a8a0;
+    --green:#2f7d5b; --green-bg:#e6f1ea;
+    --amber:#9a6b14; --amber-bg:#fdf0d5; --amber-card:#fffaf2; --amber-line:#f0e2c8;
+    --red:#b3261e; --red-bg:#fbe4e4;
+    --today-bg:#fbf8ea;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg:#181816; --card:#22221f; --line:#35352f; --line-soft:#2b2b27;
+      --ink:#ecece6; --ink-2:#bdbdb4; --muted:#96968d; --faint:#7d7d75;
+      --green:#74c9a0; --green-bg:#1e3329;
+      --amber:#e2ad55; --amber-bg:#3d2f12; --amber-card:#2a2418; --amber-line:#4a3d22;
+      --red:#ff8f85; --red-bg:#41211f;
+      --today-bg:#2c2a1d;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg:#181816; --card:#22221f; --line:#35352f; --line-soft:#2b2b27;
+    --ink:#ecece6; --ink-2:#bdbdb4; --muted:#96968d; --faint:#7d7d75;
+    --green:#74c9a0; --green-bg:#1e3329;
+    --amber:#e2ad55; --amber-bg:#3d2f12; --amber-card:#2a2418; --amber-line:#4a3d22;
+    --red:#ff8f85; --red-bg:#41211f;
+    --today-bg:#2c2a1d;
+  }
   * { box-sizing: border-box; }
   body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-         background:#f7f7f5; color:#1f1f1d; font-size:14px; line-height:1.45; }
-  .wrap { max-width:940px; margin:0 auto; padding:20px 18px 60px; }
-  h1 { font-size:22px; margin:0 0 2px; letter-spacing:-0.01em; }
-  .sub { color:#6b6b66; font-size:13px; margin-bottom:6px; }
-  .srcnote { color:#a8a8a0; font-size:11.5px; margin-bottom:18px; }
+         background:var(--bg); color:var(--ink); font-size:14px; line-height:1.45; }
+  .wrap { max-width:940px; margin:0 auto; padding-block:20px 60px; padding-inline:18px; }
+  h1 { font-size:22px; margin:0 0 2px; letter-spacing:-0.01em; text-wrap:balance; }
+  .sub { color:var(--ink-2); font-size:13px; margin-bottom:6px; }
+  .srcnote { color:var(--faint); font-size:11.5px; margin-bottom:18px; }
+  .srcnote b { color:var(--muted); }
+  .old { color:var(--red); font-weight:600; }
+  .demo { display:inline-block; background:var(--amber-bg); color:var(--amber); font-size:11.5px; font-weight:700;
+          padding:2px 10px; border-radius:999px; margin-bottom:10px; }
   .statrow { display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
-  .stat { flex:1; min-width:120px; background:#fff; border:1px solid #e8e8e4; border-radius:12px; padding:12px 16px; }
-  .stat .n { font-size:24px; font-weight:700; letter-spacing:-0.02em; }
-  .stat .l { font-size:11.5px; color:#8a8a83; text-transform:uppercase; letter-spacing:0.05em; font-weight:600; margin-top:2px; }
-  .stat.green .n { color:#2f7d5b; } .stat.amber .n { color:#b07a1e; } .stat.red .n { color:#b3261e; }
-  .card { background:#fff; border:1px solid #e8e8e4; border-radius:12px; padding:16px 18px; margin-bottom:16px; }
-  .card h2 { font-size:12px; text-transform:uppercase; letter-spacing:0.06em; color:#8a8a83; margin:0 0 12px; font-weight:600; }
-  .prio-card { background:#fffaf2; border-color:#f0e2c8; }
-  .prio-card h2 { color:#b07a1e; }
+  .stat { flex:1; min-width:120px; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px 16px; }
+  .stat .n { font-size:24px; font-weight:700; letter-spacing:-0.02em; font-variant-numeric:tabular-nums; }
+  .stat .l { font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; font-weight:600; margin-top:2px; }
+  .stat.green .n { color:var(--green); } .stat.amber .n { color:var(--amber); } .stat.red .n { color:var(--red); }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px 18px; margin-bottom:16px; }
+  .card h2 { font-size:12px; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); margin:0 0 12px; font-weight:600; }
+  .prio-card { background:var(--amber-card); border-color:var(--amber-line); }
+  .prio-card h2 { color:var(--amber); }
   .prio-row { display:flex; align-items:flex-start; gap:10px; padding:8px 0; }
-  .prio-row:not(:last-child) { border-bottom:1px solid #f1e7d4; }
-  .prio-row.done .t { text-decoration:line-through; color:#c2b9a6; }
-  .prio-row input { margin-top:3px; width:16px; height:16px; flex:0 0 auto; cursor:pointer; accent-color:#b07a1e; }
+  .prio-row:not(:last-child) { border-bottom:1px solid var(--amber-line); }
+  .prio-row.done .t { text-decoration:line-through; color:var(--faint); }
+  .prio-row input { margin-top:3px; width:16px; height:16px; flex:0 0 auto; cursor:pointer; accent-color:var(--amber); }
+  .prio-row input:focus-visible { outline:2px solid var(--amber); outline-offset:2px; }
   .prio-row .t { font-weight:500; }
-  .prio-row .m { color:#9a9a92; font-size:12px; margin-top:1px; }
-  .prio-row .m b { color:#b3261e; font-weight:600; }
-  .co-row { display:flex; align-items:flex-start; gap:10px; padding:9px 0; border-bottom:1px solid #f4f4f0; }
+  .prio-row .m { color:var(--muted); font-size:12px; margin-top:1px; }
+  .prio-row .m b { color:var(--red); font-weight:600; }
+  .co-row { display:flex; align-items:flex-start; gap:10px; padding:9px 0; border-bottom:1px solid var(--line-soft); }
   .co-row:last-child { border-bottom:none; }
   .dot { width:9px; height:9px; border-radius:50%; flex:0 0 auto; margin-top:6px; }
-  .dot.hot { background:#b3261e; } .dot.active { background:#2f7d5b; }
-  .dot.waiting { background:#b07a1e; } .dot.stale { background:#c8c8c0; }
+  .dot.hot { background:var(--red); } .dot.active { background:var(--green); }
+  .dot.waiting { background:var(--amber); } .dot.stale { background:var(--faint); }
   .co-body { flex:1; min-width:0; }
   .co-name { font-weight:600; }
-  .co-name .role { font-weight:400; color:#6b6b63; }
-  .co-status { font-size:12.5px; color:#444440; margin-top:1px; }
-  .co-note { font-size:12px; color:#9a9a92; margin-top:1px; }
+  .co-name .role { font-weight:400; color:var(--ink-2); }
+  .co-status { font-size:12.5px; color:var(--ink-2); margin-top:1px; }
+  .co-note { font-size:12px; color:var(--muted); margin-top:1px; }
   .chip { font-size:10.5px; padding:1px 8px; border-radius:999px; font-weight:700; letter-spacing:.02em; flex:0 0 auto; margin-top:3px; }
-  .c-next { background:#eaf0ea; color:#2f7d5b; }
-  .c-act  { background:#fbe4e4; color:#b3261e; }
-  .c-wait { background:#fdf0d5; color:#9a6b14; }
-  .c-stale{ background:#f1f1ec; color:#8a8a83; }
-  .c-soon { background:#1f1f1d; color:#fff; }
-  .ev { display:flex; gap:12px; padding:8px 0; border-bottom:1px solid #f0f0ec; }
+  .c-next { background:var(--green-bg); color:var(--green); }
+  .c-act  { background:var(--red-bg); color:var(--red); }
+  .c-wait { background:var(--amber-bg); color:var(--amber); }
+  .c-stale{ background:var(--line-soft); color:var(--muted); }
+  .c-soon { background:var(--ink); color:var(--bg); }
+  .ev { display:flex; gap:12px; padding:8px 0; border-bottom:1px solid var(--line-soft); flex-wrap:wrap; }
   .ev:last-child { border-bottom:none; }
-  .ev-time { flex:0 0 150px; color:#5a5a52; font-variant-numeric:tabular-nums; font-size:13px; }
+  .ev > div:last-child { flex:1; min-width:180px; }
+  .ev-time { flex:0 0 150px; font-weight:600; color:var(--ink-2); font-variant-numeric:tabular-nums; font-size:13px; }
   .ev-title { font-weight:500; }
-  .ev.hit { background:#fbfaf3; margin:0 -8px; padding:8px; border-radius:8px; }
-  .ev.hit .ev-title::after { content:" · PIPELINE"; color:#b3261e; font-size:10.5px; font-weight:700; letter-spacing:.03em; }
-  .loading, .empty { color:#9a9a92; font-style:italic; }
-  .err { color:#b3261e; font-size:13px; }
+  .ev.hit { background:var(--today-bg); margin:0 -8px; padding:8px; border-radius:8px; }
+  .empty { color:var(--muted); font-style:italic; }
   details.section { margin-bottom:10px; }
   details.section summary { cursor:pointer; font-weight:700; font-size:14px; padding-bottom:5px;
-    border-bottom:2px solid #ececE6; margin-bottom:6px; list-style:none; display:flex; align-items:baseline; gap:8px; }
-  details.section summary::before { content:"▸"; font-size:11px; color:#b0b0a8; transition:transform .15s; }
+    border-bottom:2px solid var(--line); margin-bottom:6px; list-style:none; display:flex; align-items:baseline; gap:8px; }
+  details.section summary::-webkit-details-marker { display:none; }
+  details.section summary::before { content:"▸"; font-size:11px; color:var(--faint); transition:transform .15s; }
   details[open].section summary::before { transform:rotate(90deg); }
-  details.section summary .cnt { font-size:12px; color:#a8a8a0; font-weight:400; margin-left:auto; }
+  details.section summary:focus-visible { outline:2px solid var(--amber); outline-offset:2px; }
+  details.section summary .cnt { font-size:12px; color:var(--faint); font-weight:400; margin-left:auto; }
+  @media (prefers-reduced-motion: reduce) { * { transition:none !important; } }
 </style>
 </head>
 <body>
@@ -74,9 +109,9 @@
     <div id="actions"></div>
   </div>
 
-  <div class="card" id="calCard">
-    <h2>Next 10 days</h2>
-    <div id="calendar" class="loading">Loading calendar…</div>
+  <div class="card" id="upCard">
+    <h2>Coming up</h2>
+    <div id="upcoming"></div>
   </div>
 
   <div class="card">
@@ -96,48 +131,20 @@
 // Shown in the header. Change it to whatever you like.
 const TITLE = "Job Search Dashboard";
 
-// Date this pipeline data was last verified against email and calendar.
-// The calendar below is live; everything else is a snapshot as of this date.
+// Date this page was last checked against the real sources (YYYY-MM-DD).
+// Everything on the page is a snapshot as of this date.
 const SYNCED = "YYYY-MM-DD";
 
 // Where the pipeline data came from, in plain words.
 const SOURCES = "email and calendar";
-
-// Calendar wiring. Leave null and the calendar card hides itself.
-// To switch it on, set CALENDAR_TOOL to the fully qualified name of a
-// list-events tool available in your environment, and adjust CALENDAR_ARGS
-// and readEvents() below to match that tool's request and response shape.
-// Verify the shape by calling the tool once before relying on it here.
-const CALENDAR_TOOL = null;
-
-// Arguments passed to CALENDAR_TOOL. start/end are filled in at runtime.
-function calendarArgs(startISO, endISO) {
-  return { startTime: startISO, endTime: endISO, orderBy: "startTime", pageSize: 60 };
-}
-
-// Pull a plain array of events out of whatever the tool returned.
-// Each event should come back as { summary, start, end } with ISO strings.
-function readEvents(raw) {
-  const data = raw && (raw.structuredContent
-    || (raw.content && raw.content[0] && JSON.parse(raw.content[0].text))
-    || raw);
-  const list = (data && (data.events || data.items || data)) || [];
-  if (!Array.isArray(list)) return [];
-  return list
-    .filter(ev => ev && ev.status !== "cancelled" && ev.start)
-    .map(ev => ({
-      summary: ev.summary || ev.title || "(no title)",
-      start: ev.start.dateTime || ev.start.date || ev.start,
-      end: (ev.end && (ev.end.dateTime || ev.end.date)) || ev.end || null,
-      allDay: !!(ev.start && ev.start.date && !ev.start.dateTime)
-    }));
-}
 
 /* ============================================================
    PIPELINE DATA
    Replace everything below with real entries.
 
    Stages:
+     upcoming interviews and deadlines with a date. Anything already in the
+              past is hidden automatically when the page is opened.
      actions  things waiting on YOU. The only list that is about your move.
               Its "m" field allows simple inline HTML such as <b> for
               emphasis. Every other field is escaped on render.
@@ -151,6 +158,11 @@ function readEvents(raw) {
    Dots:   hot | active | waiting | stale
    ============================================================ */
 const DATA = {
+  upcoming: [
+    // { when: "2026-01-15T14:00", what: "Company: hiring manager call",
+    //   note: "45 min with Name, video link in the invite" }
+    // Use "2026-01-15" with no time for an all-day item or a deadline.
+  ],
   actions: [
     // { id: "unique-key", t: "What to do", m: "Why it matters, with the date and source.", }
   ],
@@ -186,10 +198,13 @@ function esc(s) {
 document.getElementById("title").textContent = TITLE;
 document.getElementById("todayLabel").textContent =
   new Date().toLocaleDateString(undefined, { weekday:"long", month:"long", day:"numeric", year:"numeric" });
+const syncedDate = /^\d{4}-\d{2}-\d{2}$/.test(SYNCED) ? new Date(SYNCED + "T00:00") : null;
+const daysOld = syncedDate ? Math.floor((Date.now() - syncedDate.getTime()) / 864e5) : null;
 document.getElementById("srcnote").innerHTML =
-  "Pipeline built from " + esc(SOURCES) + " · last synced <b>" + esc(SYNCED) + "</b>" +
-  (CALENDAR_TOOL ? " · calendar below is live" : "") +
-  " · ask Claude to re-sync anytime";
+  "Built from " + esc(SOURCES) + " · last synced <b>" + esc(SYNCED) + "</b>" +
+  (daysOld !== null && daysOld > 7
+    ? ' · <span class="old">' + daysOld + " days ago, so this may be out of date. Ask Claude to refresh it.</span>"
+    : " · ask Claude to refresh anytime");
 
 const openActions = DATA.actions.filter(a => !done[a.id]).length;
 document.getElementById("stats").innerHTML = [
@@ -240,59 +255,31 @@ document.getElementById("closed").innerHTML  = rows(DATA.closed, "stale");
   document.getElementById("cnt" + k).textContent = DATA[k.toLowerCase()].length;
 });
 
-// Company names from the pipeline, used to highlight matching calendar events.
-const PIPELINE_NAMES = []
-  .concat(DATA.active, DATA.stale, DATA.unclear)
-  .map(r => String(r.co || "").toLowerCase())
-  .filter(Boolean);
+// Coming up: dated items from the last sync. Past items drop off on their own.
+(function () {
+  const card = document.getElementById("upCard");
+  const el = document.getElementById("upcoming");
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const items = (DATA.upcoming || [])
+    .map(u => {
+      const allDay = !/T\d/.test(String(u.when));
+      const d = new Date(allDay ? u.when + "T00:00" : u.when);
+      return { d: d, allDay: allDay, what: u.what, note: u.note };
+    })
+    .filter(u => !isNaN(u.d) && u.d >= today)
+    .sort((a, b) => a.d - b.d);
 
-(async () => {
-  const card = document.getElementById("calCard");
-  const el = document.getElementById("calendar");
+  if (!items.length) { card.hidden = true; return; }
 
-  if (!CALENDAR_TOOL) { card.style.display = "none"; return; }
-
-  const bridge = (typeof window !== "undefined" && window.cowork && window.cowork.callMcpTool)
-    ? window.cowork.callMcpTool : null;
-  if (!bridge) {
-    el.className = "";
-    el.innerHTML = '<span class="empty">No calendar bridge in this viewer. ' +
-                   'Open the dashboard where its tools are available, or leave CALENDAR_TOOL null to hide this card.</span>';
-    return;
-  }
-
-  try {
-    const now = new Date();
-    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const end = new Date(start.getTime() + 10 * 864e5);
-    const raw = await bridge(CALENDAR_TOOL, calendarArgs(start.toISOString(), end.toISOString()));
-    const events = readEvents(raw)
-      .filter(e => e.start)
-      .sort((a, b) => String(a.start).localeCompare(String(b.start)));
-
-    if (!events.length) { el.className = ""; el.innerHTML = '<span class="empty">Nothing in the next 10 days.</span>'; return; }
-
-    const fmtDay  = d => d.toLocaleDateString(undefined, { weekday:"short", month:"short", day:"numeric" });
-    const fmtTime = d => d.toLocaleTimeString(undefined, { hour:"numeric", minute:"2-digit" });
-    let html = "", lastDay = "";
-    for (const ev of events) {
-      const s = new Date(ev.start);
-      const day = fmtDay(s);
-      if (day !== lastDay) {
-        html += '<div style="font-size:12px;font-weight:600;color:#8a8a83;margin:8px 0 2px">' + day + '</div>';
-        lastDay = day;
-      }
-      const low = ev.summary.toLowerCase();
-      const hit = PIPELINE_NAMES.some(n => low.includes(n));
-      const time = ev.allDay ? "all-day" : fmtTime(s) + (ev.end ? "–" + fmtTime(new Date(ev.end)) : "");
-      html += '<div class="ev ' + (hit ? "hit" : "") + '"><div class="ev-time">' + time + '</div>' +
-              '<div><div class="ev-title">' + esc(ev.summary) + '</div></div></div>';
-    }
-    el.className = ""; el.innerHTML = html;
-  } catch (e) {
-    el.className = "";
-    el.innerHTML = '<div class="err">Could not load the calendar: ' + esc(e && e.message ? e.message : e) + '</div>';
-  }
+  const fmtDay  = d => d.toLocaleDateString(undefined, { weekday:"short", month:"short", day:"numeric" });
+  const fmtTime = d => d.toLocaleTimeString(undefined, { hour:"numeric", minute:"2-digit" });
+  el.innerHTML = items.map(u => {
+    const isToday = u.d.toDateString() === new Date().toDateString();
+    return '<div class="ev ' + (isToday ? "hit" : "") + '">' +
+      '<div class="ev-time">' + (isToday ? "Today" : fmtDay(u.d)) + (u.allDay ? "" : ", " + fmtTime(u.d)) + '</div>' +
+      '<div><div class="ev-title">' + esc(u.what) + '</div>' +
+      (u.note ? '<div class="co-note">' + esc(u.note) + '</div>' : "") + '</div></div>';
+  }).join("");
 })();
 </script>
 </body>
