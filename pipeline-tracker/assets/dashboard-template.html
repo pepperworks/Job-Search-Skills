@@ -4,108 +4,136 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Job Search Dashboard</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Urbanist:wght@500;600;700;800&display=swap">
 <style>
-  /* One column, summary first: counts, then what is waiting on you, then dates, then the full board. */
-  /* One look on purpose: cream in every viewer, light or dark mode. */
+  /* Two panels: your moves and the full board on warm cream, dates and counts on white.
+     Sage green and peach carry status; navy carries the type. Falls back to system fonts offline. */
   :root {
     color-scheme: light;
-    --bg:#fdf8ec; --card:#ffffff; --line:#f0e7d4; --line-soft:#f7f1e3;
-    --ink:#3a2c26; --ink-2:#6b5b51; --muted:#93847a; --faint:#b8aca0;
-    --accent:#3a2c26; --accent-bg:#f6ecd6; --accent-card:#fff7e3; --accent-line:#f3e6c6;
-    --hero-a:#fbf1da; --hero-b:#f8ebcf;
-    --green:#3f7a5c; --green-bg:#e3f1e6;
-    --amber:#a36f14; --amber-bg:#fbedc8;
-    --red:#c2412d; --red-bg:#fbe2da;
+    --page:#f3e6d6; --cream:#f7f2ea; --white:#ffffff; --rule:#ece5da;
+    --ink:#1e2030; --ink-2:#55566a; --muted:#8d8c95;
+    --green:#8fb573; --green-ink:#4c7434; --green-tint:#e7f1dd;
+    --peach:#f1a36a; --peach-ink:#b25a22; --peach-tint:#fce7d4;
+    --sans:"Urbanist","Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;
+    --lift:0 10px 24px -18px rgba(30,32,48,.35);
   }
-  * { box-sizing: border-box; }
-  body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-         background:var(--bg); color:var(--ink); font-size:14px; line-height:1.45; }
-  .wrap { max-width:940px; margin:0 auto; padding-block:20px 60px; padding-inline:18px; }
-  .hero { background:linear-gradient(150deg, var(--hero-a), var(--hero-b)); border-radius:18px; padding:18px 20px 16px; margin-bottom:16px; }
-  h1 { font-family:ui-rounded,"SF Pro Rounded","Nunito","Segoe UI",system-ui,sans-serif; font-size:26px; font-weight:800; margin:0 0 2px; letter-spacing:-0.01em; text-wrap:balance; }
-  .sub { color:var(--ink-2); font-size:13px; margin-bottom:6px; }
-  .srcnote { color:var(--ink-2); font-size:11.5px; }
-  .srcnote b { color:var(--ink); }
-  .old { color:var(--red); font-weight:600; }
-  .demo { display:inline-block; background:var(--card); color:var(--accent); font-size:11.5px; font-weight:700;
-          padding:2px 10px; border-radius:999px; margin-bottom:10px; }
-  .statrow { display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
-  .stat { flex:1; min-width:120px; background:var(--card); border:1px solid var(--line); border-radius:16px; padding:12px 16px; }
-  .stat .n { font-family:ui-rounded,"SF Pro Rounded","Nunito","Segoe UI",system-ui,sans-serif; font-size:26px; font-weight:800; letter-spacing:-0.02em; font-variant-numeric:tabular-nums; }
-  .stat .l { font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; font-weight:600; margin-top:2px; }
-  .stat.green .n { color:var(--green); } .stat.amber .n { color:var(--amber); } .stat.red .n { color:var(--red); }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px 18px; margin-bottom:16px; }
-  .card h2 { font-size:12px; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); margin:0 0 12px; font-weight:600; }
-  .prio-card { background:var(--accent-card); border-color:var(--accent-line); }
-  .prio-card h2 { color:var(--accent); }
-  .prio-row { display:flex; align-items:flex-start; gap:10px; padding:8px 0; }
-  .prio-row:not(:last-child) { border-bottom:1px solid var(--accent-line); }
-  .prio-row.done .t { text-decoration:line-through; color:var(--faint); }
-  .prio-row input { margin-top:3px; width:16px; height:16px; flex:0 0 auto; cursor:pointer; accent-color:var(--accent); }
-  .prio-row input:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
-  .prio-row .t { font-weight:500; }
-  .prio-row .m { color:var(--muted); font-size:12px; margin-top:1px; }
-  .prio-row .m b { color:var(--red); font-weight:600; }
-  .co-row { display:flex; align-items:flex-start; gap:10px; padding:9px 0; border-bottom:1px solid var(--line-soft); }
-  .co-row:last-child { border-bottom:none; }
-  .dot { width:9px; height:9px; border-radius:50%; flex:0 0 auto; margin-top:6px; }
-  .dot.hot { background:var(--accent); } .dot.active { background:var(--green); }
-  .dot.waiting { background:var(--amber); } .dot.stale { background:var(--faint); }
-  .co-body { flex:1; min-width:0; }
-  .co-name { font-weight:600; }
-  .co-name .role { font-weight:400; color:var(--ink-2); }
-  .co-status { font-size:12.5px; color:var(--ink-2); margin-top:1px; }
-  .co-note { font-size:12px; color:var(--muted); margin-top:1px; }
-  .chip { font-size:10.5px; padding:1px 8px; border-radius:999px; font-weight:700; letter-spacing:.02em; flex:0 0 auto; margin-top:3px; }
-  .c-next { background:var(--green-bg); color:var(--green); }
-  .c-act  { background:var(--red-bg); color:var(--red); }
-  .c-wait { background:var(--amber-bg); color:var(--amber); }
-  .c-stale{ background:var(--line-soft); color:var(--muted); }
-  .c-soon { background:var(--accent); color:var(--card); }
-  .ev { display:flex; gap:12px; padding:8px 0; border-bottom:1px solid var(--line-soft); flex-wrap:wrap; }
-  .ev:last-child { border-bottom:none; }
-  .ev > div:last-child { flex:1; min-width:180px; }
-  .ev-time { flex:0 0 150px; font-weight:600; color:var(--ink-2); font-variant-numeric:tabular-nums; font-size:13px; }
-  .ev-title { font-weight:500; }
-  .ev.hit { background:var(--accent-card); margin:0 -8px; padding:8px; border-radius:8px; }
-  .empty { color:var(--muted); font-style:italic; }
-  details.section { margin-bottom:10px; }
-  details.section summary { cursor:pointer; font-weight:700; font-size:14px; padding-bottom:5px;
-    border-bottom:2px solid var(--line); margin-bottom:6px; list-style:none; display:flex; align-items:baseline; gap:8px; }
-  details.section summary::-webkit-details-marker { display:none; }
-  details.section summary::before { content:"▸"; font-size:11px; color:var(--faint); transition:transform .15s; }
-  details[open].section summary::before { transform:rotate(90deg); }
-  details.section summary:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
-  details.section summary .cnt { font-size:12px; color:var(--faint); font-weight:400; margin-left:auto; }
-  @media (prefers-reduced-motion: reduce) { * { transition:none !important; } }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:var(--sans); background:var(--page); color:var(--ink); font-size:15px; line-height:1.45; font-weight:500;
+         padding-block:24px 40px; padding-inline:16px; }
+  .shell { max-width:1080px; margin:0 auto; background:var(--cream); border-radius:28px; overflow:hidden;
+           display:grid; grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);
+           grid-template-areas:"head side" "main side"; grid-template-rows:auto 1fr; }
+  .head { grid-area:head; padding:34px 32px 0; min-width:0; }
+  .main { grid-area:main; padding:0 32px 36px; min-width:0; }
+  .side { grid-area:side; background:var(--white); padding:34px 28px 36px; min-width:0; }
+
+  .demo { display:inline-block; background:var(--green-tint); color:var(--green-ink); font-size:12px; font-weight:700;
+          padding:4px 12px; border-radius:999px; margin-bottom:16px; }
+  h1 { font-size:34px; line-height:1.1; font-weight:700; letter-spacing:-0.02em; margin:0; text-wrap:balance; }
+  .sub { color:var(--ink-2); margin-top:10px; }
+  .srcnote { color:var(--muted); font-size:13px; margin-top:2px; }
+  .srcnote b { color:var(--ink-2); font-weight:700; }
+  .old { color:var(--peach-ink); font-weight:700; }
+
+  h2 { font-size:18px; font-weight:700; letter-spacing:-0.01em; margin:32px 0 14px; display:flex; align-items:baseline; gap:8px; }
+  .side > h2:first-child { margin-top:0; }
+  h2 .cnt, summary .cnt { margin-left:auto; font-size:13px; font-weight:600; color:var(--muted); font-variant-numeric:tabular-nums; }
+
+  .list { display:flex; flex-direction:column; gap:10px; }
+  .task { display:flex; align-items:flex-start; gap:12px; background:var(--white); border-radius:16px; padding:14px 16px;
+          box-shadow:var(--lift); cursor:pointer; }
+  .task input { appearance:none; -webkit-appearance:none; width:20px; height:20px; margin:1px 0 0; flex:0 0 auto; cursor:pointer;
+                border:2px solid #d9d2c5; border-radius:7px; background:var(--white); position:relative; }
+  .task input:checked { background:var(--green); border-color:var(--green); }
+  .task input:checked::after { content:""; position:absolute; left:5px; top:1px; width:5px; height:10px;
+                border:solid var(--white); border-width:0 2.5px 2.5px 0; transform:rotate(42deg); }
+  .task input:focus-visible, summary:focus-visible { outline:2px solid var(--ink); outline-offset:2px; }
+  .task.done { box-shadow:none; background:transparent; }
+  .task.done .t { text-decoration:line-through; color:var(--muted); }
+
+  .body { flex:1; min-width:0; }
+  .t { font-weight:700; }
+  .t .role { font-weight:500; color:var(--ink-2); }
+  .s { font-size:14px; color:var(--ink-2); margin-top:1px; }
+  .m { font-size:13px; color:var(--muted); margin-top:2px; }
+  .m b { color:var(--peach-ink); font-weight:700; }
+
+  .row { display:flex; align-items:flex-start; gap:12px; padding:12px 0; border-bottom:1px solid var(--rule); }
+  .row:last-child { border-bottom:none; }
+  .dot { width:9px; height:9px; border-radius:50%; flex:0 0 auto; margin-top:7px; background:#cfc8bb; }
+  .dot.move { background:var(--peach); } .dot.booked { background:var(--green); }
+  .pill { flex:0 0 auto; font-size:11.5px; font-weight:700; padding:3px 11px; border-radius:999px; margin-top:2px;
+          background:#efe9df; color:var(--ink-2); }
+  .pill.c-act { background:var(--peach-tint); color:var(--peach-ink); }
+  .pill.c-next { background:var(--green-tint); color:var(--green-ink); }
+  .pill.c-soon { background:var(--ink); color:var(--white); }
+
+  details { margin-top:6px; }
+  summary { cursor:pointer; list-style:none; display:flex; align-items:baseline; gap:8px; font-weight:700; padding:12px 0;
+            border-bottom:1px solid var(--rule); }
+  summary::-webkit-details-marker { display:none; }
+  summary::before { content:"+"; width:12px; color:var(--muted); font-weight:500; }
+  details[open] > summary::before { content:"\2212"; }
+  .empty { color:var(--muted); padding:12px 0; }
+
+  .stats { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:12px; }
+  .stat { background:var(--cream); border-radius:16px; padding:14px 16px; }
+  .stat .n { font-size:30px; line-height:1; font-weight:700; letter-spacing:-0.02em; font-variant-numeric:tabular-nums; }
+  .stat .l { font-size:13px; color:var(--ink-2); margin-top:6px; }
+  .stat.alert { background:var(--peach-tint); } .stat.alert .n { color:var(--peach-ink); }
+  .stat.good { background:var(--green-tint); } .stat.good .n { color:var(--green-ink); }
+
+  .ev { display:flex; align-items:center; gap:14px; padding:10px 0; }
+  .date { flex:0 0 46px; height:46px; border-radius:13px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+          background:var(--green-tint); color:var(--green-ink); line-height:1; }
+  .ev:nth-child(even) .date { background:var(--peach-tint); color:var(--peach-ink); }
+  .ev.today .date { background:var(--ink); color:var(--white); }
+  .date .d { font-size:17px; font-weight:800; font-variant-numeric:tabular-nums; }
+  .date .mo { font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; margin-top:3px; }
+  .ev .time { flex:0 0 auto; font-size:13px; font-weight:600; color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap; }
+
+  @media (max-width:820px) {
+    .shell { grid-template-columns:minmax(0,1fr); grid-template-areas:"head" "side" "main"; grid-template-rows:auto; border-radius:22px; }
+    .head { padding:26px 20px 22px; }
+    .side { padding:24px 20px; }
+    .main { padding:0 20px 30px; }
+    h1 { font-size:28px; }
+    .stats { grid-template-columns:repeat(4, minmax(0,1fr)); }
+  }
+  @media (max-width:520px) {
+    .stats { grid-template-columns:repeat(2, minmax(0,1fr)); }
+    .ev { flex-wrap:wrap; }
+    .ev .time { flex-basis:100%; padding-left:60px; margin-top:-8px; }
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="hero">
+<div class="shell">
+  <div class="head">
     <h1 id="title">Job Search Dashboard</h1>
     <div class="sub" id="todayLabel"></div>
     <div class="srcnote" id="srcnote"></div>
   </div>
 
-  <div class="statrow" id="stats"></div>
+  <div class="main">
+    <h2>Needs action from you <span class="cnt" id="cntActions"></span></h2>
+    <div class="list" id="actions"></div>
 
-  <div class="card prio-card">
-    <h2>Needs action from you</h2>
-    <div id="actions"></div>
-  </div>
-
-  <div class="card" id="upCard">
-    <h2>Coming up</h2>
-    <div id="upcoming"></div>
-  </div>
-
-  <div class="card">
     <h2>Pipeline</h2>
-    <details class="section" open><summary>Active <span class="cnt" id="cntActive"></span></summary><div id="active"></div></details>
-    <details class="section"><summary>Gone quiet <span class="cnt" id="cntStale"></span></summary><div id="stale"></div></details>
-    <details class="section"><summary>Unactioned leads <span class="cnt" id="cntUnclear"></span></summary><div id="unclear"></div></details>
-    <details class="section"><summary>Closed <span class="cnt" id="cntClosed"></span></summary><div id="closed"></div></details>
+    <details open><summary>Active <span class="cnt" id="cntActive"></span></summary><div id="active"></div></details>
+    <details><summary>Gone quiet <span class="cnt" id="cntStale"></span></summary><div id="stale"></div></details>
+    <details><summary>Unactioned leads <span class="cnt" id="cntUnclear"></span></summary><div id="unclear"></div></details>
+    <details><summary>Closed <span class="cnt" id="cntClosed"></span></summary><div id="closed"></div></details>
+  </div>
+
+  <div class="side">
+    <h2>At a glance</h2>
+    <div class="stats" id="stats"></div>
+
+    <div id="upCard">
+      <h2>Coming up</h2>
+      <div id="upcoming"></div>
+    </div>
   </div>
 </div>
 
@@ -141,7 +169,8 @@ const SOURCES = "email and calendar";
 
    Chips:  ["c-soon","TODAY"]  ["c-act","YOUR MOVE"]
            ["c-next","BOOKED"] ["c-wait","WAITING"] ["c-stale","STALE"]
-   Dots:   hot | active | waiting | stale
+   The chip also picks the dot colour: orange = your move, green = booked
+   or today, grey = waiting or quiet.
    ============================================================ */
 const DATA = {
   upcoming: [
@@ -155,7 +184,7 @@ const DATA = {
   active: [
     // { co: "Company", role: "Role title", status: "Where it stands, with a date",
     //   note: "Interviewer names, format, anything useful",
-    //   chip: ["c-next","BOOKED"], dot: "hot" }
+    //   chip: ["c-next","BOOKED"] }
   ],
   stale: [
     // { co: "Company", role: "Role", status: "Last contact and what it was",
@@ -175,15 +204,16 @@ const DATA = {
    ============================================================ */
 const STORE_KEY = "jobdash-done-v1";
 let done = {};
-try { done = JSON.parse(localStorage.getItem(STORE_KEY) || "{}"); } catch (e) {}
+try { done = JSON.parse(localStorage.getItem(STORE_KEY) || "{}") || {}; } catch (e) {}
 
 function esc(s) {
-  return String(s == null ? "" : s).replace(/[&<>]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;" }[c]));
+  return String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
 }
 
 document.getElementById("title").textContent = TITLE;
 document.getElementById("todayLabel").textContent =
   new Date().toLocaleDateString(undefined, { weekday:"long", month:"long", day:"numeric", year:"numeric" });
+
 const syncedDate = /^\d{4}-\d{2}-\d{2}$/.test(SYNCED) ? new Date(SYNCED + "T00:00") : null;
 const daysOld = syncedDate ? Math.floor((Date.now() - syncedDate.getTime()) / 864e5) : null;
 document.getElementById("srcnote").innerHTML =
@@ -192,25 +222,26 @@ document.getElementById("srcnote").innerHTML =
     ? ' · <span class="old">' + daysOld + " days ago, so this may be out of date. Ask Claude to refresh it.</span>"
     : " · ask Claude to refresh anytime");
 
-const openActions = DATA.actions.filter(a => !done[a.id]).length;
-document.getElementById("stats").innerHTML = [
-  ["green", DATA.active.length, "Active"],
-  ["red", openActions, "Need your move"],
-  ["amber", DATA.stale.length, "Gone quiet"],
-  ["", DATA.active.length + DATA.stale.length + DATA.unclear.length, "Total open"]
-].map(s => '<div class="stat ' + s[0] + '"><div class="n">' + s[1] + '</div><div class="l">' + s[2] + '</div></div>').join("");
+function renderStats() {
+  const open = DATA.actions.filter(a => !done[a.id]).length;
+  document.getElementById("cntActions").textContent = open + " open";
+  document.getElementById("stats").innerHTML = [
+    [open, "Need your move", open ? "alert" : ""],
+    [DATA.active.length, "Active", "good"],
+    [DATA.stale.length, "Gone quiet", ""],
+    [DATA.active.length + DATA.stale.length + DATA.unclear.length, "Total open", ""]
+  ].map(s => '<div class="stat ' + s[2] + '"><div class="n">' + s[0] + '</div><div class="l">' + s[1] + '</div></div>').join("");
+}
 
 function renderActions() {
   const box = document.getElementById("actions");
-  if (!DATA.actions.length) {
-    box.innerHTML = '<span class="empty">Nothing is waiting on you right now.</span>';
-    return;
-  }
-  box.innerHTML = DATA.actions.map(a =>
-    '<div class="prio-row ' + (done[a.id] ? "done" : "") + '">' +
-      '<input type="checkbox" data-id="' + esc(a.id) + '" ' + (done[a.id] ? "checked" : "") + '>' +
-      '<div><div class="t">' + esc(a.t) + '</div><div class="m">' + (a.m || "") + '</div></div>' +
-    '</div>').join("");
+  renderStats();
+  if (!DATA.actions.length) { box.innerHTML = '<div class="empty">Nothing is waiting on you right now.</div>'; return; }
+  box.innerHTML = DATA.actions.map((a, i) =>
+    '<label class="task ' + (done[a.id] ? "done" : "") + '">' +
+      '<input type="checkbox" id="act-' + i + '" data-id="' + esc(a.id) + '" ' + (done[a.id] ? "checked" : "") + '>' +
+      '<div class="body"><div class="t">' + esc(a.t) + '</div><div class="m">' + (a.m || "") + '</div></div>' +
+    '</label>').join("");
   box.querySelectorAll("input").forEach(cb => cb.addEventListener("change", e => {
     done[e.target.dataset.id] = e.target.checked;
     try { localStorage.setItem(STORE_KEY, JSON.stringify(done)); } catch (err) {}
@@ -219,24 +250,27 @@ function renderActions() {
 }
 renderActions();
 
-function rows(list, defaultDot, defaultChip) {
-  if (!list.length) return '<span class="empty">Nothing here.</span>';
-  return list.map(r =>
-    '<div class="co-row">' +
-      '<div class="dot ' + (r.dot || defaultDot) + '"></div>' +
-      '<div class="co-body">' +
-        '<div class="co-name">' + esc(r.co) + (r.role ? ' <span class="role">· ' + esc(r.role) + '</span>' : "") + '</div>' +
-        '<div class="co-status">' + esc(r.status) + '</div>' +
-        (r.note ? '<div class="co-note">' + esc(r.note) + '</div>' : "") +
+// The chip decides the dot, so colour and label can never disagree.
+const DOTS = { "c-act":"move", "c-next":"booked", "c-soon":"booked" };
+function rows(list, defaultChip) {
+  if (!list.length) return '<div class="empty">Nothing here.</div>';
+  return list.map(r => {
+    const chip = r.chip || defaultChip || null;
+    return '<div class="row">' +
+      '<span class="dot ' + ((chip && DOTS[chip[0]]) || "") + '"></span>' +
+      '<div class="body">' +
+        '<div class="t">' + esc(r.co) + (r.role ? ' <span class="role">' + esc(r.role) + '</span>' : "") + '</div>' +
+        '<div class="s">' + esc(r.status) + '</div>' +
+        (r.note ? '<div class="m">' + esc(r.note) + '</div>' : "") +
       '</div>' +
-      (r.chip ? '<span class="chip ' + r.chip[0] + '">' + esc(r.chip[1]) + '</span>'
-              : (defaultChip ? '<span class="chip ' + defaultChip[0] + '">' + esc(defaultChip[1]) + '</span>' : "")) +
-    '</div>').join("");
+      (chip ? '<span class="pill ' + esc(chip[0]) + '">' + esc(chip[1].charAt(0) + chip[1].slice(1).toLowerCase()) + '</span>' : "") +
+    '</div>';
+  }).join("");
 }
-document.getElementById("active").innerHTML  = rows(DATA.active, "active");
-document.getElementById("stale").innerHTML   = rows(DATA.stale, "stale", ["c-stale","STALE"]);
-document.getElementById("unclear").innerHTML = rows(DATA.unclear, "stale");
-document.getElementById("closed").innerHTML  = rows(DATA.closed, "stale");
+document.getElementById("active").innerHTML  = rows(DATA.active);
+document.getElementById("stale").innerHTML   = rows(DATA.stale, ["c-stale","STALE"]);
+document.getElementById("unclear").innerHTML = rows(DATA.unclear);
+document.getElementById("closed").innerHTML  = rows(DATA.closed);
 ["Active","Stale","Unclear","Closed"].forEach(k => {
   document.getElementById("cnt" + k).textContent = DATA[k.toLowerCase()].length;
 });
@@ -244,27 +278,27 @@ document.getElementById("closed").innerHTML  = rows(DATA.closed, "stale");
 // Coming up: dated items from the last sync. Past items drop off on their own.
 (function () {
   const card = document.getElementById("upCard");
-  const el = document.getElementById("upcoming");
   const today = new Date(); today.setHours(0, 0, 0, 0);
   const items = (DATA.upcoming || [])
     .map(u => {
       const allDay = !/T\d/.test(String(u.when));
-      const d = new Date(allDay ? u.when + "T00:00" : u.when);
-      return { d: d, allDay: allDay, what: u.what, note: u.note };
+      return { d: new Date(allDay ? u.when + "T00:00" : u.when), allDay: allDay, what: u.what, note: u.note };
     })
     .filter(u => !isNaN(u.d) && u.d >= today)
     .sort((a, b) => a.d - b.d);
 
   if (!items.length) { card.hidden = true; return; }
 
-  const fmtDay  = d => d.toLocaleDateString(undefined, { weekday:"short", month:"short", day:"numeric" });
   const fmtTime = d => d.toLocaleTimeString(undefined, { hour:"numeric", minute:"2-digit" });
-  el.innerHTML = items.map(u => {
+  document.getElementById("upcoming").innerHTML = items.map(u => {
     const isToday = u.d.toDateString() === new Date().toDateString();
-    return '<div class="ev ' + (isToday ? "hit" : "") + '">' +
-      '<div class="ev-time">' + (isToday ? "Today" : fmtDay(u.d)) + (u.allDay ? "" : ", " + fmtTime(u.d)) + '</div>' +
-      '<div><div class="ev-title">' + esc(u.what) + '</div>' +
-      (u.note ? '<div class="co-note">' + esc(u.note) + '</div>' : "") + '</div></div>';
+    const when = (isToday ? "Today" : u.d.toLocaleDateString(undefined, { weekday:"short" })) + (u.allDay ? "" : " " + fmtTime(u.d));
+    return '<div class="ev ' + (isToday ? "today" : "") + '">' +
+      '<div class="date"><span class="d">' + u.d.getDate() + '</span><span class="mo">' +
+        esc(u.d.toLocaleDateString(undefined, { month:"short" })) + '</span></div>' +
+      '<div class="body"><div class="t">' + esc(u.what) + '</div>' +
+      (u.note ? '<div class="m">' + esc(u.note) + '</div>' : "") + '</div>' +
+      '<div class="time">' + esc(when) + '</div></div>';
   }).join("");
 })();
 </script>

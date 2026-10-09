@@ -69,8 +69,8 @@ snippets truncate, and a decision usually lands in the last message.
 
 Copy `assets/dashboard-template.html`, set the config values at the top and
 replace the `DATA` object. The template is one self-contained file that
-needs no network and no connectors to open, so it works the same for
-everyone.
+needs no connectors to open, so it works the same for everyone. It loads one
+web font when online and falls back to system fonts when not.
 
 Put every dated commitment from Step 2 into `DATA.upcoming`: interviews,
 take-home due dates, deadlines. Include the time, who it is with and the

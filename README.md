@@ -14,7 +14,7 @@ All three follow one rule: **Claude describes what you've really done in the bes
 
 Here's what the Pipeline Tracker builds, shown with made-up companies. [Open the live demo](https://claude.ai/artifact/AiXuy27dwAEi1dd3HMzRrs) to click around.
 
-[![A sample job search dashboard: four counts across the top, a list of things waiting on you, upcoming interviews, and every company grouped by stage](docs/pipeline-demo.png)](https://claude.ai/artifact/AiXuy27dwAEi1dd3HMzRrs)
+[![A sample job search dashboard: a list of things waiting on you, every company grouped by stage, and a side panel with counts and upcoming interviews](docs/pipeline-demo.png)](https://claude.ai/artifact/AiXuy27dwAEi1dd3HMzRrs)
 
 ## Install (about 5 minutes)
 
@@ -93,7 +93,7 @@ Each folder is a standard skill: a `SKILL.md` plus supporting files.
 - **Rebuild the downloads** after editing a skill: `./package.sh` writes fresh zips to `downloads/`.
 - **Resume generator:** `resume-tailor/scripts/generate_resume.js` needs Node.js and the `docx` package. The JSON schema and style options (font, accent color, Letter or A4, section order) are documented at the top of that file.
 - **Your own baseline:** replace `resume-tailor/references/master_resume.json` with your resume to skip attaching it each time. It holds your contact details, so think before pushing a fork public.
-- **Dashboard:** `pipeline-tracker/assets/dashboard-template.html` is one self-contained file. It needs no network and no connectors to open.
+- **Dashboard:** `pipeline-tracker/assets/dashboard-template.html` is one self-contained file. It needs no connectors, and falls back to system fonts when offline.
 
 </details>
 
