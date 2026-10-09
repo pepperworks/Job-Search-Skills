@@ -1,0 +1,62 @@
+{
+  "_note": "SAMPLE DATA. Jordan Rivera and every company below are fictional and exist only to show the schema. Replace this whole file with your own baseline resume (keep the keys, delete this note), or leave it and hand Claude your resume in the conversation instead. Claude should never tailor from this sample.",
+  "name": "JORDAN A. RIVERA",
+  "tagline": "Product Leader | Platform & Growth",
+  "contact": {
+    "location": "Chicago, IL",
+    "phone": "555-010-0142",
+    "email": "jordan@example.com",
+    "website": "https://example.com",
+    "websiteLabel": "example.com",
+    "linkedin": "https://linkedin.com/in/example",
+    "linkedinLabel": "linkedin.com/in/example"
+  },
+  "summary": "Product leader with 9 years building B2B software, from first version to scale. Background in analytics and self-serve growth, with a track record of turning ambiguous customer problems into shipped products. Comfortable working directly with engineering, sales, and customers.",
+  "skills": [
+    { "label": "Product", "items": "Roadmapping, Discovery, Pricing & Packaging, Experimentation, PRDs" },
+    { "label": "Data & Analytics", "items": "SQL, Funnel Analysis, Cohort Retention, Dashboarding" },
+    { "label": "Leadership", "items": "Cross-functional Teams, Hiring, Stakeholder Management" }
+  ],
+  "experience": [
+    {
+      "company": "Northwind Labs",
+      "title": "Senior Product Manager",
+      "dates": "2022 - Present",
+      "bullets": [
+        "Led the self-serve onboarding rebuild with a team of 8 engineers and 1 designer, raising trial-to-paid conversion from 6% to 9%.",
+        "Introduced usage-based pricing for the API tier after interviewing 30 customers."
+      ]
+    },
+    {
+      "company": "Fabrikam Software",
+      "dates": "2017 - 2022",
+      "roles": [
+        {
+          "title": "Product Manager",
+          "dates": "2019 - 2022",
+          "bullets": [
+            "Owned the reporting product used by 1,200 customer accounts.",
+            "Shipped scheduled exports, the most requested feature two years running."
+          ]
+        },
+        {
+          "title": "Business Analyst",
+          "dates": "2017 - 2019",
+          "bullets": [
+            "Built the retention dashboards the leadership team reviewed weekly."
+          ]
+        }
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "B.A. Economics, Example State University",
+      "details": "Graduated with honors"
+    }
+  ],
+  "additional": [
+    "Volunteer mentor, local product management meetup",
+    "Languages: English, Spanish"
+  ]
+}

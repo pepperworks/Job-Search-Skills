@@ -1,0 +1,5 @@
+node_modules/
+dist/
+*.docx
+content.json
+.DS_Store
